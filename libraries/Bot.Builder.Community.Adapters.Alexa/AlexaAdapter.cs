@@ -37,6 +37,8 @@ namespace Bot.Builder.Community.Adapters.Alexa
         {
             TurnContext context = null;
 
+            Integration.AspNet.Core.AlexaRequestHandler.DumpAlexaPayload(alexaRequest, "rawRequest");
+
             try
             {
                 var activity = RequestToActivity(alexaRequest);

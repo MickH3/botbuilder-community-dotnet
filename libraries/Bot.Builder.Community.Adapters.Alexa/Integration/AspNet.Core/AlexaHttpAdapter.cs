@@ -56,10 +56,15 @@ namespace Bot.Builder.Community.Adapters.Alexa.Integration.AspNet.Core
             var requestBytes = memoryStream.ToArray();
             memoryStream.Position = 0;
 
+
+            Integration.AspNet.Core.AlexaRequestHandler.MarkEvent("Before Deserialize ProcessAsync");
+
             using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
             {
                 skillRequest = AlexaBotMessageSerializer.Deserialize<AlexaRequestBody>(bodyReader);
             }
+
+            Integration.AspNet.Core.AlexaRequestHandler.MarkEvent("After Deserialize ProcessAsync");
 
             if (skillRequest.Version != "1.0")
                 throw new Exception($"Unexpected version of '{skillRequest.Version}' received.");
