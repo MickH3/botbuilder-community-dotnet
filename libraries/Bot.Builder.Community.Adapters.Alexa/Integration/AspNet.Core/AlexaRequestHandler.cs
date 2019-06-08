@@ -34,27 +34,6 @@ namespace Bot.Builder.Community.Adapters.Alexa.Integration.AspNet.Core
             _alexaAdapter = alexaAdapter;
             _alexaOptions = alexaOptions;
         }
-
-        public static void DumpAlexaPayload(object payload, string fileName)
-        {
-            var rJsonFormatted = JsonConvert.SerializeObject(payload, Formatting.Indented,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
-                });
-
-            StreamWriter sW = File.CreateText($"D:\\GithubClones\\Output\\{fileName}_{DateTime.Now.Ticks.ToString()}.json");
-            sW.Write(rJsonFormatted);
-            sW.Close();
-        }
-
-        public static void MarkEvent(string eventName)
-        {
-            StreamWriter sW = File.CreateText($"D:\\GithubClones\\Output\\{eventName}_{DateTime.Now.Ticks.ToString()}.json");
-            sW.Write("This happened");
-            sW.Close();
-        }
        
         protected async Task<AlexaResponseBody> ProcessMessageRequestAsync(HttpRequest request, AlexaAdapter alexaAdapter, BotCallbackHandler botCallbackHandler)
         {
@@ -64,16 +43,12 @@ namespace Bot.Builder.Community.Adapters.Alexa.Integration.AspNet.Core
             request.Body.CopyTo(memoryStream);
             var requestBytes = memoryStream.ToArray();
             memoryStream.Position = 0;
-
-            MarkEvent("Before Deserialize ProcessMessageRequestAsync");
-
+            
             using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
             {
                 alexaRequest = AlexaBotMessageSerializer.Deserialize<AlexaRequestBody>(bodyReader);
             }
-
-            MarkEvent("After Deserialize ProcessMessageRequestAsync");
-
+            
             if (alexaRequest.Version != "1.0")
                 throw new Exception($"Unexpected version of '{alexaRequest.Version}' received.");
 
@@ -133,20 +108,7 @@ namespace Bot.Builder.Community.Adapters.Alexa.Integration.AspNet.Core
                         NullValueHandling = NullValueHandling.Ignore,
                         ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
                     });
-
-                DumpAlexaPayload(alexaResponseBody, "JSONBody");
-
-                //var rJsonFormatted = JsonConvert.SerializeObject(alexaResponseBody, Formatting.Indented,
-                //    new JsonSerializerSettings
-                //    {
-                //        NullValueHandling = NullValueHandling.Ignore,
-                //        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
-                //    });
-
-                //StreamWriter sW = File.CreateText($"D:\\GithubClones\\Output\\JSONBody_{DateTime.Now.Ticks.ToString()}.json");
-                //sW.Write(rJsonFormatted);
-                //sW.Close();
-                
+                                
                 await response.WriteAsync(alexaResponseBodyJson);
             }
             catch (UnauthorizedAccessException)

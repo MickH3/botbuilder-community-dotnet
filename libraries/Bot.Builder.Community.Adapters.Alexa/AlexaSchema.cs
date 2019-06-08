@@ -28,6 +28,9 @@ namespace Bot.Builder.Community.Adapters.Alexa
             if (Request is AlexaSessionEndRequest)
                 return typeof(AlexaSessionEndRequest);
 
+            if (Request is AlexaAPLUserEventRequest)
+                return typeof(AlexaAPLUserEventRequest);
+
             return null;
         }
     }
@@ -56,6 +59,25 @@ namespace Bot.Builder.Community.Adapters.Alexa
         public AlexaSystem System { get; set; }
 
         public AlexaAudioPlayer AudioPlayer { get; set; }
+
+        public AlexaDisplay Display { get; set; }
+
+        [JsonProperty("Alexa.Presentation.APL")]
+        public AlexaPresentationAPL AlexaPresentationAPL { get; set; }
+    }
+
+    public class AlexaDisplay
+    {
+        public string Token { get; set; }
+    }
+
+    public class AlexaPresentationAPL
+    {
+        public string Token { get; set; }
+
+        public string Version { get; set; }
+
+        public List<JObject> ComponentsVisibleOnScreen { get; set; }
     }
 
     public class AlexaSystem
@@ -228,6 +250,25 @@ namespace Bot.Builder.Community.Adapters.Alexa
         public string Locale { get; set; }
     }
 
+    public class AlexaAPLUserEventRequest : IAlexaRequest
+    {
+        public string Type { get; set; }
+
+        public string Timestamp { get; set; }
+
+        public string RequestId { get; set; }
+
+        public string Locale { get; set; }
+
+        public string Token { get; set; }
+
+        public List<string> Arguments { get; set; }
+
+        public JObject Components { get; set; }
+
+        public Dictionary<string, string> Source { get; set; }
+    }
+
     public class AlexaSessionEndRequest : IAlexaRequest
     {
         public string Reason { get; set; }
@@ -373,6 +414,9 @@ namespace Bot.Builder.Community.Adapters.Alexa
                     break;
                 case AlexaRequestTypes.IntentRequest:
                     profession = new AlexaIntentRequest();
+                    break;
+                case AlexaRequestTypes.APLUserEvent:
+                    profession = new AlexaAPLUserEventRequest();
                     break;
             }
             serializer.Populate(jsonObject.CreateReader(), profession);

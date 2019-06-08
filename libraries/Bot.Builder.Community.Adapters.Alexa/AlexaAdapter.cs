@@ -37,8 +37,6 @@ namespace Bot.Builder.Community.Adapters.Alexa
         {
             TurnContext context = null;
 
-            Integration.AspNet.Core.AlexaRequestHandler.DumpAlexaPayload(alexaRequest, "rawRequest");
-
             try
             {
                 var activity = RequestToActivity(alexaRequest);
@@ -147,6 +145,10 @@ namespace Bot.Builder.Community.Adapters.Alexa
                 case AlexaRequestTypes.SessionEndedRequest:
                     activity.Code = (skillRequest.Request as AlexaSessionEndRequest)?.Reason;
                     activity.Value = (skillRequest.Request as AlexaSessionEndRequest)?.Error;
+                    break;
+                case AlexaRequestTypes.APLUserEvent:
+                    activity.Value = skillRequest.Request as AlexaAPLUserEventRequest;
+                    activity.Code = (skillRequest.Request as AlexaAPLUserEventRequest)?.Token;
                     break;
             }
 
