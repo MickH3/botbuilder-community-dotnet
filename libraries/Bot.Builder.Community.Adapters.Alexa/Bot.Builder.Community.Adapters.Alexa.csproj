@@ -12,6 +12,10 @@
     <AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>D:\TFS\Bots\BizzyCore-branch\BizzyCore\Assemblies\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Integration\AspNet.WebApi\**" />
     <EmbeddedResource Remove="Integration\AspNet.WebApi\**" />

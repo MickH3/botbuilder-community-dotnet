@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Bot.Builder.Community.Adapters.Alexa.Integration.AspNet.Core
@@ -34,7 +35,29 @@ namespace Bot.Builder.Community.Adapters.Alexa.Integration.AspNet.Core
             _alexaAdapter = alexaAdapter;
             _alexaOptions = alexaOptions;
         }
-       
+
+
+        public static void DumpAlexaPayload(object payload, string fileName)
+        {
+            var rJsonFormatted = JsonConvert.SerializeObject(payload, Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                });
+
+            StreamWriter sW = File.CreateText($"D:\\AlexaDump\\{fileName}_{DateTime.Now.Ticks.ToString()}.json");
+            sW.Write(rJsonFormatted);
+            sW.Close();
+        }
+
+        public static void MarkEvent(string eventName)
+        {
+            StreamWriter sW = File.CreateText($"D:\\AlexaDump\\{eventName}_{DateTime.Now.Ticks.ToString()}.json");
+            sW.Write("This happened");
+            sW.Close();
+        }
+
         protected async Task<AlexaResponseBody> ProcessMessageRequestAsync(HttpRequest request, AlexaAdapter alexaAdapter, BotCallbackHandler botCallbackHandler)
         {
             AlexaRequestBody alexaRequest;
@@ -43,7 +66,15 @@ namespace Bot.Builder.Community.Adapters.Alexa.Integration.AspNet.Core
             request.Body.CopyTo(memoryStream);
             var requestBytes = memoryStream.ToArray();
             memoryStream.Position = 0;
-            
+
+            //string plJson = "";
+            //for (int i = 0; i < requestBytes.Length; i++)
+            //{
+            //    plJson += (char)requestBytes[i];
+            //}
+            //JObject parsedObj = JObject.Parse(plJson);
+            //DumpAlexaPayload(parsedObj, "AlexaPayLoad");
+
             using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8)))
             {
                 alexaRequest = AlexaBotMessageSerializer.Deserialize<AlexaRequestBody>(bodyReader);

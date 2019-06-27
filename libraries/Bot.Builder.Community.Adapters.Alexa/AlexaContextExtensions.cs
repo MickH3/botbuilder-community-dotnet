@@ -14,11 +14,21 @@ namespace Bot.Builder.Community.Adapters.Alexa
     {
         public static Dictionary<string, string> AlexaSessionAttributes(this ITurnContext context)
         {
+            if (!context.TurnState.ContainsKey("AlexaSessionAttributes"))
+            {
+                context.TurnState.Add("AlexaSessionAttributes", new Dictionary<string, string>());
+            }
+
             return context.TurnState.Get<Dictionary<string, string>>("AlexaSessionAttributes");
         }
 
         public static List<IAlexaDirective> AlexaResponseDirectives(this ITurnContext context)
         {
+            if (!context.TurnState.ContainsKey("AlexaResponseDirectives"))
+            {
+                context.TurnState.Add("AlexaResponseDirectives", new List<IAlexaDirective>());
+            }
+
             return context.TurnState.Get<List<IAlexaDirective>>("AlexaResponseDirectives");
         }
 
@@ -29,7 +39,14 @@ namespace Bot.Builder.Community.Adapters.Alexa
 
         public static void AlexaSetCard(this ITurnContext context, AlexaCard card)
         {
-            context.TurnState.Add("AlexaCard", card);
+            if (context.TurnState.ContainsKey("AlexaCard"))
+            {
+                context.TurnState["AlexaCard"] = card;
+            }
+            else
+            {
+                context.TurnState.Add("AlexaCard", card);
+            }
         }
 
         public static async Task<HttpResponseMessage> AlexaSendProgressiveResponse(this ITurnContext context, string content)
